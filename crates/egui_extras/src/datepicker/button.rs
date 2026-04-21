@@ -144,11 +144,19 @@ impl Widget for DatePickerButton<'_> {
         if button_state.picker_visible {
             text = text.color(visuals.text_color());
         }
+        let mut restore_inactive = None;
+        if button_state.picker_visible {
+            restore_inactive = Some(ui.style().visuals.widgets.inactive);
+            ui.style_mut().visuals.widgets.inactive = ui.style().visuals.widgets.open;
+        }
         let mut button = Button::new(text);
         if button_state.picker_visible {
             button = button.fill(visuals.weak_bg_fill).stroke(visuals.bg_stroke);
         }
         let mut button_response = ui.add(button);
+        if let Some(inactive) = restore_inactive {
+            ui.style_mut().visuals.widgets.inactive = inactive;
+        }
         if button_response.clicked() {
             button_state.picker_visible = true;
             ui.data_mut(|data| data.insert_persisted(id, button_state.clone()));
