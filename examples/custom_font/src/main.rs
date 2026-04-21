@@ -24,7 +24,7 @@ fn add_font(ctx: &egui::Context) {
     ctx.add_font(FontInsert::new(
         "my_font",
         egui::FontData::from_static(include_bytes!(
-            "../../../crates/epaint_default_fonts/fonts/Hack-Regular.ttf"
+            "../../../crates/epaint_default_fonts/fonts/FiraNotoSC-Regular.ttf"
         )),
         vec![
             InsertFontFamily {
@@ -49,7 +49,7 @@ fn replace_fonts(ctx: &egui::Context) {
     fonts.font_data.insert(
         "my_font".to_owned(),
         std::sync::Arc::new(egui::FontData::from_static(include_bytes!(
-            "../../../crates/epaint_default_fonts/fonts/Hack-Regular.ttf"
+            "../../../crates/epaint_default_fonts/fonts/FiraNotoSC-Regular.ttf"
         ))),
     );
 

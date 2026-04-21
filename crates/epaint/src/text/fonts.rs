@@ -17,7 +17,7 @@ use crate::{
 use emath::{NumExt as _, OrderedFloat};
 
 #[cfg(feature = "default_fonts")]
-use epaint_default_fonts::{EMOJI_ICON, HACK_REGULAR, NOTO_EMOJI_REGULAR, UBUNTU_LIGHT};
+use epaint_default_fonts::FIRA_NOTO_SC_REGULAR;
 
 // ----------------------------------------------------------------------------
 
@@ -344,53 +344,17 @@ impl Default for FontDefinitions {
     #[cfg(feature = "default_fonts")]
     fn default() -> Self {
         let mut font_data: BTreeMap<String, Arc<FontData>> = BTreeMap::new();
-
         let mut families = BTreeMap::new();
 
         font_data.insert(
-            "Hack".to_owned(),
-            Arc::new(FontData::from_static(HACK_REGULAR)),
+            "FiraNotoSC-Regular".to_owned(),
+            Arc::new(FontData::from_static(FIRA_NOTO_SC_REGULAR)),
         );
 
-        // Some good looking emojis. Use as first priority:
-        font_data.insert(
-            "NotoEmoji-Regular".to_owned(),
-            Arc::new(FontData::from_static(NOTO_EMOJI_REGULAR).tweak(FontTweak {
-                scale: 0.81, // Make smaller
-                ..Default::default()
-            })),
-        );
-
-        font_data.insert(
-            "Ubuntu-Light".to_owned(),
-            Arc::new(FontData::from_static(UBUNTU_LIGHT)),
-        );
-
-        // Bigger emojis, and more. <http://jslegers.github.io/emoji-icon-font/>:
-        font_data.insert(
-            "emoji-icon-font".to_owned(),
-            Arc::new(FontData::from_static(EMOJI_ICON).tweak(FontTweak {
-                scale: 0.90, // Make smaller
-                ..Default::default()
-            })),
-        );
-
-        families.insert(
-            FontFamily::Monospace,
-            vec![
-                "Hack".to_owned(),
-                "Ubuntu-Light".to_owned(), // fallback for √ etc
-                "NotoEmoji-Regular".to_owned(),
-                "emoji-icon-font".to_owned(),
-            ],
-        );
+        families.insert(FontFamily::Monospace, vec!["FiraNotoSC-Regular".to_owned()]);
         families.insert(
             FontFamily::Proportional,
-            vec![
-                "Ubuntu-Light".to_owned(),
-                "NotoEmoji-Regular".to_owned(),
-                "emoji-icon-font".to_owned(),
-            ],
+            vec!["FiraNotoSC-Regular".to_owned()],
         );
 
         Self {
@@ -414,18 +378,6 @@ impl FontDefinitions {
     }
 
     /// List of all the builtin font names used by `epaint`.
-    #[cfg(feature = "default_fonts")]
-    pub fn builtin_font_names() -> &'static [&'static str] {
-        &[
-            "Ubuntu-Light",
-            "NotoEmoji-Regular",
-            "emoji-icon-font",
-            "Hack",
-        ]
-    }
-
-    /// List of all the builtin font names used by `epaint`.
-    #[cfg(not(feature = "default_fonts"))]
     pub fn builtin_font_names() -> &'static [&'static str] {
         &[]
     }
