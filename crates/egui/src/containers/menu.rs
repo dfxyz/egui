@@ -20,7 +20,8 @@ use epaint::Stroke;
 ///
 /// Mainly removes the background stroke and the inactive background fill.
 pub fn menu_style(style: &mut Style) {
-    style.spacing.button_padding = vec2(2.0, 0.0);
+    style.spacing.item_spacing = vec2(2.0, 0.0);
+    style.spacing.button_padding = vec2(6.0, 0.0);
     style.visuals.widgets.active.bg_stroke = Stroke::NONE;
     style.visuals.widgets.open.bg_stroke = Stroke::NONE;
     style.visuals.widgets.hovered.bg_stroke = Stroke::NONE;

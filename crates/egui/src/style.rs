@@ -1376,7 +1376,7 @@ pub fn default_text_styles() -> BTreeMap<TextStyle, FontId> {
     use FontFamily::{Monospace, Proportional};
 
     [
-        (TextStyle::Small, FontId::new(9.0, Proportional)),
+        (TextStyle::Small, FontId::new(10.0, Proportional)),
         (TextStyle::Body, FontId::new(13.0, Proportional)),
         (TextStyle::Button, FontId::new(13.0, Proportional)),
         (TextStyle::Heading, FontId::new(18.0, Proportional)),
@@ -1413,12 +1413,12 @@ impl Default for Style {
 impl Default for Spacing {
     fn default() -> Self {
         Self {
-            item_spacing: vec2(8.0, 3.0),
-            window_margin: Margin::same(6),
+            item_spacing: vec2(8.0, 4.0),
+            window_margin: Margin::same(8),
             menu_margin: Margin::same(6),
-            button_padding: vec2(4.0, 1.0),
+            button_padding: vec2(8.0, 4.0),
             indent: 18.0, // match checkbox/radio-button with `button_padding.x + icon_width + icon_spacing`
-            interact_size: vec2(40.0, 18.0),
+            interact_size: vec2(40.0, 24.0),
             slider_width: 100.0,
             slider_rail_height: 8.0,
             combo_width: 100.0,
@@ -1529,10 +1529,10 @@ impl Visuals {
             },
             widgets: Widgets::light(),
             selection: Selection::light(),
-            hyperlink_color: Color32::from_rgb(0, 155, 255),
+            hyperlink_color: Color32::from_rgb(46, 121, 245), // oklch(0.6 0.2 260)
             faint_bg_color: Color32::from_additive_luminance(5), // visible, but barely so
-            extreme_bg_color: Color32::from_gray(255),           // e.g. TextEdit background
-            code_bg_color: Color32::from_gray(230),
+            extreme_bg_color: Color32::from_gray(255),        // e.g. TextEdit background
+            code_bg_color: Color32::from_rgb(230, 243, 232),  // oklch(0.92 0.02 150)
             warn_fg_color: Color32::from_rgb(255, 100, 0), // slightly orange red. it's difficult to find a warning color that pops on bright background.
             error_fg_color: Color32::from_rgb(255, 0, 0),  // red
 
@@ -1580,8 +1580,8 @@ impl Selection {
 
     fn light() -> Self {
         Self {
-            bg_fill: Color32::from_rgb(144, 209, 255),
-            stroke: Stroke::new(1.0, Color32::from_rgb(0, 83, 125)),
+            bg_fill: Color32::from_rgb(158, 225, 171), // oklch(0.85 0.1 150)
+            stroke: Stroke::new(1.0, Color32::BLACK),
         }
     }
 }
@@ -1645,7 +1645,7 @@ impl Widgets {
                 bg_fill: Color32::from_gray(248),
                 bg_stroke: Stroke::new(1.0, Color32::from_gray(190)), // separators, indentation lines
                 fg_stroke: Stroke::new(1.0, Color32::from_gray(80)),  // normal text color
-                corner_radius: CornerRadius::same(2),
+                corner_radius: CornerRadius::same(4),
                 expansion: 0.0,
             },
             inactive: WidgetVisuals {
@@ -1653,7 +1653,7 @@ impl Widgets {
                 bg_fill: Color32::from_gray(230),      // checkbox background
                 bg_stroke: Default::default(),
                 fg_stroke: Stroke::new(1.0, Color32::from_gray(60)), // button text
-                corner_radius: CornerRadius::same(2),
+                corner_radius: CornerRadius::same(4),
                 expansion: 0.0,
             },
             hovered: WidgetVisuals {
@@ -1661,7 +1661,7 @@ impl Widgets {
                 bg_fill: Color32::from_gray(220),
                 bg_stroke: Stroke::new(1.0, Color32::from_gray(105)), // e.g. hover over window edge or button
                 fg_stroke: Stroke::new(1.5, Color32::BLACK),
-                corner_radius: CornerRadius::same(3),
+                corner_radius: CornerRadius::same(4),
                 expansion: 0.0,
             },
             active: WidgetVisuals {
@@ -1669,7 +1669,7 @@ impl Widgets {
                 bg_fill: Color32::from_gray(165),
                 bg_stroke: Stroke::new(1.0, Color32::BLACK),
                 fg_stroke: Stroke::new(2.0, Color32::BLACK),
-                corner_radius: CornerRadius::same(2),
+                corner_radius: CornerRadius::same(4),
                 expansion: 0.0,
             },
             open: WidgetVisuals {
@@ -1677,7 +1677,7 @@ impl Widgets {
                 bg_fill: Color32::from_gray(220),
                 bg_stroke: Stroke::new(1.0, Color32::from_gray(160)),
                 fg_stroke: Stroke::new(1.0, Color32::BLACK),
-                corner_radius: CornerRadius::same(2),
+                corner_radius: CornerRadius::same(4),
                 expansion: 0.0,
             },
         }
