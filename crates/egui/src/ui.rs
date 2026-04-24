@@ -2640,7 +2640,9 @@ impl Ui {
     where
         Payload: Any + Send + Sync,
     {
-        let is_being_dragged = self.ctx().is_being_dragged(id);
+        // 只在左键按下时处理拖拽事件，防止右键打开上下文菜单时触发不必要的拖拽预览效果
+        let is_being_dragged = self.ctx().is_being_dragged(id)
+            && self.input(|i| i.pointer.button_down(PointerButton::Primary));
 
         if is_being_dragged {
             crate::DragAndDrop::set_payload(self.ctx(), payload);
