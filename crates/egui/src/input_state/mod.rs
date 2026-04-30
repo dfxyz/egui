@@ -737,6 +737,43 @@ impl InputState {
         self.consume_key(modifiers, logical_key)
     }
 
+    /// 统计并消耗所有匹配的按键事件，但使用[`Modifiers::matches_exact`]精确匹配修饰键。
+    pub fn count_and_consume_key_exact(&mut self, modifiers: Modifiers, logical_key: Key) -> usize {
+        let mut count = 0usize;
+
+        self.events.retain(|event| {
+            let is_match = matches!(
+                event,
+                Event::Key {
+                    key: ev_key,
+                    modifiers: ev_mods,
+                    pressed: true,
+                    ..
+                } if *ev_key == logical_key && ev_mods.matches_exact(modifiers)
+            );
+
+            count += is_match as usize;
+
+            !is_match
+        });
+
+        count
+    }
+
+    /// 检查并消耗指定的按键事件。使用[`Modifiers::matches_exact`]精确匹配修饰键。
+    pub fn consume_key_exact(&mut self, modifiers: Modifiers, logical_key: Key) -> bool {
+        self.count_and_consume_key_exact(modifiers, logical_key) > 0
+    }
+
+    /// 检查并消耗指定的快捷键按下事件。使用[`Modifiers::matches_exact`]精确匹配修饰键。
+    pub fn consume_shortcut_exact(&mut self, shortcut: &KeyboardShortcut) -> bool {
+        let KeyboardShortcut {
+            modifiers,
+            logical_key,
+        } = *shortcut;
+        self.consume_key_exact(modifiers, logical_key)
+    }
+
     /// Was the given key pressed this frame?
     ///
     /// Includes key-repeat events.
