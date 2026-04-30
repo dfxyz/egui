@@ -332,11 +332,8 @@ impl Default for Options {
             system_theme: None,
             sync_window_theme: true,
             zoom_factor: 1.0,
-            zoom_with_keyboard: true,
-            quit_shortcuts: vec![crate::KeyboardShortcut::new(
-                crate::Modifiers::COMMAND,
-                crate::Key::Q,
-            )],
+            zoom_with_keyboard: false,
+            quit_shortcuts: vec![],
             tessellation_options: Default::default(),
             repaint_on_widget_change: false,
 
