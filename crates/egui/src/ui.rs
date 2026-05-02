@@ -2678,9 +2678,7 @@ impl Ui {
             let InnerResponse { inner, response } = self.scope(add_contents);
 
             // Check for drags:
-            let dnd_response = self
-                .interact(response.rect, id, Sense::drag())
-                .on_hover_cursor(CursorIcon::Grab);
+            let dnd_response = self.interact(response.rect, id, Sense::drag());
 
             InnerResponse::new(inner, dnd_response | response)
         }
