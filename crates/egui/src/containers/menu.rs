@@ -323,6 +323,15 @@ impl<'a> MenuButton<'a> {
         let response = self.button.ui(ui);
         let mut config = self.config.unwrap_or_else(|| MenuConfig::find(ui));
         config.bar = false;
+
+        // 打开某个顶级菜单后，若指针悬浮到其他MenuButton之上，切换打开对应的菜单
+        if !response.clicked() && response.hovered() && Popup::is_any_open(ui.ctx()) {
+            let popup_id = Popup::default_response_id(&response);
+            if !Popup::is_id_open(ui.ctx(), popup_id) {
+                Popup::open_id(ui.ctx(), popup_id);
+            }
+        }
+
         let inner = Popup::menu(&response)
             .close_behavior(config.close_behavior)
             .style(config.style.clone())
