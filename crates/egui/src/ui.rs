@@ -2631,6 +2631,7 @@ impl Ui {
     /// In contrast to [`Response::dnd_set_drag_payload`],
     /// this function will paint the widget at the mouse cursor while the user is dragging.
     #[doc(alias = "drag and drop")]
+    #[inline]
     pub fn dnd_drag_source<Payload, R>(
         &mut self,
         id: Id,
@@ -2640,10 +2641,43 @@ impl Ui {
     where
         Payload: Any + Send + Sync,
     {
+        self.dnd_drag_source_advanced(
+            id,
+            payload,
+            Option::<fn(Pos2, Rect) -> Vec2>::None,
+            add_contents,
+            Option::<fn(&mut Self) -> InnerResponse<R>>::None,
+            true,
+        )
+    }
+
+    /// 绘制可被拖拽和释放的控件
+    /// - `id`：控件的唯一标识
+    /// - `payload`：拖拽时传递的数据
+    /// - `dragging_preview_delta`：拖拽时绘制控件的偏移量；传入`None`则使用默认偏移量，即指针位置对应控件的中心
+    /// - `add_contents`：绘制控件内容；若`add_contents_when_not_dragging`非`None`，该函数仅用于绘制拖拽状态下的控件内容
+    /// - `add_contents_when_not_dragging`：若非`None`，使用该函数绘制非拖拽状态下的控件内容
+    /// - `use_interact`：是否使用[`Ui::interact`]方法监听拖拽事件
+    ///
+    /// 注意：
+    /// - 当`use_interact`为`true`时，由于[`Ui::interact`]会绘制一个隐形的控件覆盖在原控件之上，这会导致响应式容器控件无法正常工作等后果
+    /// - 当`add_contents_when_not_dragging`非`None`且`use_interact`为`false`时，该绘制函数必须保证返回的Response的id与`id`相同，并且能够监听拖拽事件
+    /// - 当`add_contents_when_not_dragging`非`None`但不能保证返回的Response的id与`id`相同时，`use_interact`必须设置为`true`，否则将无法监听拖拽事件
+    pub fn dnd_drag_source_advanced<Payload, R>(
+        &mut self,
+        id: Id,
+        payload: Payload,
+        dragging_preview_delta: Option<impl FnOnce(Pos2, Rect) -> Vec2>,
+        add_contents: impl FnOnce(&mut Self) -> R,
+        add_contents_when_not_dragging: Option<impl FnOnce(&mut Self) -> InnerResponse<R>>,
+        use_interact: bool,
+    ) -> InnerResponse<R>
+    where
+        Payload: Any + Send + Sync,
+    {
         // 只在左键按下时处理拖拽事件，防止右键打开上下文菜单时触发不必要的拖拽预览效果
         let is_being_dragged = self.ctx().is_being_dragged(id)
             && self.input(|i| i.pointer.button_down(PointerButton::Primary));
-
         if is_being_dragged {
             crate::DragAndDrop::set_payload(self.ctx(), payload);
 
@@ -2660,19 +2694,34 @@ impl Ui {
             // So this is fine!
 
             if let Some(pointer_pos) = self.ctx().pointer_interact_pos() {
-                let delta = pointer_pos - response.rect.center();
+                let delta = dragging_preview_delta
+                    .map(|f| f(pointer_pos, response.rect))
+                    .unwrap_or_else(|| pointer_pos - response.rect.center());
                 self.ctx()
                     .transform_layer_shapes(layer_id, emath::TSTransform::from_translation(delta));
             }
 
             InnerResponse::new(inner, response)
         } else {
-            let InnerResponse { inner, response } = self.scope(add_contents);
-
-            // Check for drags:
-            let dnd_response = self.interact(response.rect, id, Sense::drag());
-
-            InnerResponse::new(inner, dnd_response | response)
+            let InnerResponse { inner, response } = match add_contents_when_not_dragging {
+                Some(add_contents) => add_contents(self),
+                None => {
+                    if use_interact {
+                        self.scope(add_contents)
+                    } else {
+                        self.scope_builder(
+                            UiBuilder::new().id(id).sense(Sense::click_and_drag()),
+                            add_contents,
+                        )
+                    }
+                }
+            };
+            let response = if use_interact {
+                self.interact(response.rect, id, Sense::click_and_drag()) | response
+            } else {
+                response
+            };
+            InnerResponse::new(inner, response)
         }
     }
 
