@@ -2677,8 +2677,8 @@ impl Ui {
         } else {
             let InnerResponse { inner, response } = self.scope(add_contents);
 
-            // Check for drags:
-            let dnd_response = self.interact(response.rect, id, Sense::drag());
+            // Check for drags (and clicks for context menu):
+            let dnd_response = self.interact(response.rect, id, Sense::click_and_drag());
 
             InnerResponse::new(inner, dnd_response | response)
         }
